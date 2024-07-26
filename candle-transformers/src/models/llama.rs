@@ -243,21 +243,6 @@ impl CausalSelfAttention {
             let q = q.transpose(1, 2)?;
             let k = k.transpose(1, 2)?;
             let v = v.transpose(1, 2)?;
-            {
-                use hex_literal::hex;
-                use sha3::{Digest, Sha3_256};
-                // Create a SHA3-256 object
-                let mut hasher = Sha3_256::new();
-    
-                // Write input message
-                hasher.update(&q.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-                hasher.update(&k.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-                hasher.update(&v.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-    
-                // Read hash digest and consume hasher
-                let x = hasher.finalize();
-                panic!("FLAG: {:?}", x);
-            }
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?
         } else {
@@ -419,6 +404,7 @@ impl Llama {
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
         }
+        x.save_safetensors("attn_output", "./")?;
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
         let logits = self.lm_head.forward(&x)?;
