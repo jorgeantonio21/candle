@@ -200,6 +200,22 @@ impl CausalSelfAttention {
         let k = self.k_proj.forward(x)?;
         let v = self.v_proj.forward(x)?;
 
+        {
+            use hex_literal::hex;
+            use sha3::{Digest, Sha3_256};
+            // Create a SHA3-256 object
+            let mut hasher = Sha3_256::new();
+
+            // Write input message
+            hasher.update(&q.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+            hasher.update(&k.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+            hasher.update(&v.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+
+            // Read hash digest and consume hasher
+            let x = hasher.finalize();
+            panic!("FLAG: {:?}", x);
+        }
+
         let q = q
             .reshape((b_sz, seq_len, self.num_attention_heads, self.head_dim))?
             .transpose(1, 2)?
@@ -353,19 +369,6 @@ impl Block {
         let _enter = self.span.enter();
         let residual = x;
         let x = self.rms_1.forward(x)?;
-        {
-            use hex_literal::hex;
-            use sha3::{Digest, Sha3_256};
-            // Create a SHA3-256 object
-            let mut hasher = Sha3_256::new();
-
-            // Write input message
-            hasher.update(&x.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-
-            // Read hash digest and consume hasher
-            let x = hasher.finalize();
-            panic!("FLAG: {:?}", x);
-        }
         let x = (self.attn.forward(&x, index_pos, block_idx, cache)? + residual)?;
         let residual = &x;
         let x = (self.mlp.forward(&self.rms_2.forward(&x)?)? + residual)?;
