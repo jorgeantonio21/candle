@@ -420,7 +420,7 @@ impl Llama {
             let mut hasher = Sha3_256::new();
 
             // Write input message
-            hasher.update(&x.flatten_all()?.to_vec1::<f32>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+            hasher.update(&x.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
 
             // Read hash digest and consume hasher
             let x = hasher.finalize();

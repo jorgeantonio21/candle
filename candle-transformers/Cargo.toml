@@ -27,6 +27,9 @@ tracing = { workspace = true }
 
 hex-literal = "0.4.1"
 sha3 = "0.10.8"
+half = { version = "2.4.1", features = ["num-traits"] }
+
+
 
 [features]
 default = []
