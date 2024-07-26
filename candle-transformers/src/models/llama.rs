@@ -200,22 +200,6 @@ impl CausalSelfAttention {
         let k = self.k_proj.forward(x)?;
         let v = self.v_proj.forward(x)?;
 
-        {
-            use hex_literal::hex;
-            use sha3::{Digest, Sha3_256};
-            // Create a SHA3-256 object
-            let mut hasher = Sha3_256::new();
-
-            // Write input message
-            hasher.update(&q.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-            hasher.update(&k.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-            hasher.update(&v.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
-
-            // Read hash digest and consume hasher
-            let x = hasher.finalize();
-            panic!("FLAG: {:?}", x);
-        }
-
         let q = q
             .reshape((b_sz, seq_len, self.num_attention_heads, self.head_dim))?
             .transpose(1, 2)?
@@ -230,6 +214,21 @@ impl CausalSelfAttention {
 
         let q = self.apply_rotary_emb(&q, index_pos, cache)?;
         let mut k = self.apply_rotary_emb(&k, index_pos, cache)?;
+
+        {
+            use hex_literal::hex;
+            use sha3::{Digest, Sha3_256};
+            // Create a SHA3-256 object
+            let mut hasher = Sha3_256::new();
+
+            // Write input message
+            hasher.update(&q.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+            hasher.update(&k.flatten_all()?.to_vec1::<half::bf16>()?.iter().flat_map(|v| v.to_be_bytes()).collect::<Vec<_>>());
+
+            // Read hash digest and consume hasher
+            let x = hasher.finalize();
+            panic!("FLAG: {:?}", x);
+        }
 
         if cache.use_kv_cache {
             if let Some((cache_k, cache_v)) = &cache.kvs[block_idx] {
