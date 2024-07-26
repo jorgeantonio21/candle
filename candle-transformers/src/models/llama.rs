@@ -5,6 +5,21 @@ use std::collections::HashMap;
 
 pub const MAX_SEQ_LEN: usize = 4096;
 
+pub fn save_tensor_to_file(tensor: &Tensor, filename: &str) -> Result<()> {
+    use std::io::Write;
+    let json_output = serde_json::to_string(
+        &tensor
+            .to_device(&Device::Cpu)?
+            .flatten_all()?
+            .to_dtype(DType::F64)?
+            .to_vec1::<f64>()?,
+    )
+    .unwrap();
+    let mut file = std::fs::File::create(std::path::PathBuf::from(filename))?;
+    file.write_all(json_output.as_bytes())?;
+    Ok(())
+}
+
 #[derive(Debug, Clone, serde::Deserialize)]
 pub struct LlamaConfig {
     pub hidden_size: usize,
@@ -417,7 +432,7 @@ impl Llama {
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
         }
-        x.save_safetensors("attn_output", "./")?;
+        save_tensor_to_file(&x, "attn_output")?;
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
         let logits = self.lm_head.forward(&x)?;
