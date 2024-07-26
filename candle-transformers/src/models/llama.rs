@@ -413,6 +413,7 @@ impl Llama {
     pub fn forward(&self, x: &Tensor, index_pos: usize, cache: &mut Cache) -> Result<Tensor> {
         let (_b_sz, seq_len) = x.dims2()?;
         let mut x = self.wte.forward(x)?;
+        panic!("FLAG: {:?}", x.flatten_all()?.to_vec0()?);
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
         }
