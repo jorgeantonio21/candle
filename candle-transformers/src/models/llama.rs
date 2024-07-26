@@ -417,6 +417,7 @@ impl Llama {
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
         }
+        x.save_safetensors("attn_output", "./")?;
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
         let logits = self.lm_head.forward(&x)?;
