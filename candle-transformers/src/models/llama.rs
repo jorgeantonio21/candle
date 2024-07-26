@@ -413,6 +413,9 @@ impl Llama {
     pub fn forward(&self, x: &Tensor, index_pos: usize, cache: &mut Cache) -> Result<Tensor> {
         let (_b_sz, seq_len) = x.dims2()?;
         let mut x = self.wte.forward(x)?;
+        for (block_idx, block) in self.blocks.iter().enumerate() {
+            x = block.forward(&x, index_pos, block_idx, cache)?;
+        }
         {
             use hex_literal::hex;
             use sha3::{Digest, Sha3_256};
@@ -425,9 +428,6 @@ impl Llama {
             // Read hash digest and consume hasher
             let x = hasher.finalize();
             panic!("FLAG: {:?}", x);
-        }
-        for (block_idx, block) in self.blocks.iter().enumerate() {
-            x = block.forward(&x, index_pos, block_idx, cache)?;
         }
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
