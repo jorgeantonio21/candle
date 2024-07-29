@@ -215,10 +215,6 @@ impl CausalSelfAttention {
         let k = self.k_proj.forward(x)?;
         let v = self.v_proj.forward(x)?;
 
-        save_tensor_to_file(&q, "query")?;
-        save_tensor_to_file(&k, "key")?;
-        save_tensor_to_file(&v, "value")?;
-
         let q = q
             .reshape((b_sz, seq_len, self.num_attention_heads, self.head_dim))?
             .transpose(1, 2)?
@@ -262,6 +258,9 @@ impl CausalSelfAttention {
             let q = q.transpose(1, 2)?;
             let k = k.transpose(1, 2)?;
             let v = v.transpose(1, 2)?;
+            save_tensor_to_file(&q, "query")?;
+            save_tensor_to_file(&k, "key")?;
+            save_tensor_to_file(&v, "value")?;
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?
         } else {
