@@ -434,9 +434,8 @@ impl Llama {
         let mut x = self.wte.forward(x)?;
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
+            panic!("FLAG");
         }
-        save_tensor_to_file(&x, "attn_output")?;
-        panic!("FLAG");
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
         let logits = self.lm_head.forward(&x)?;
