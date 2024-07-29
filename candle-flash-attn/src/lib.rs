@@ -165,6 +165,7 @@ impl FlashAttn {
             let v_ptr = *v.device_ptr() as *const core::ffi::c_void;
             let dst_ptr = *dst.device_ptr() as *const core::ffi::c_void;
             let softmax_lse_ptr = *softmax_lse.device_ptr() as *const core::ffi::c_void;
+            println!("q_ptr = {q_ptr:?}, k_ptr = {k_ptr:?}, v_ptr = {v_ptr:?}, dst_ptr = {dst_ptr:?}, softmax_lse_ptr = {softmax_lse_ptr:?}, alibi_slopes_ptr = {alibi_slopes_ptr:?}");
             ffi::run_mha(
                 q_ptr,
                 k_ptr,
