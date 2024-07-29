@@ -185,7 +185,7 @@ fn flash_attn(
     softmax_scale: f32,
     causal: bool,
 ) -> Result<Tensor> {
-    candle_flash_attn::flash_attn_varlen(q, k, v, &Tensor::new(&[0u32, 3], &Device::new_cuda(0).unwrap()).unwrap(), &Tensor::new(&[0u32, 3], &Device::new_cuda(0).unwrap()).unwrap(), 100, 100, softmax_scale, causal)
+    candle_flash_attn::flash_attn(q, k, v, softmax_scale, causal)
 }
 
 #[cfg(not(feature = "flash-attn"))]
@@ -250,6 +250,7 @@ impl CausalSelfAttention {
             cache.kvs[block_idx] = Some((k.clone(), v.clone()))
         }
 
+
         save_tensor_to_file(&q.transpose(1, 2)?, "query")?;
         save_tensor_to_file(&k.transpose(1, 2)?, "key")?;
         save_tensor_to_file(&v.transpose(1, 2)?, "value")?;
@@ -262,6 +263,7 @@ impl CausalSelfAttention {
             let k = k.transpose(1, 2)?;
             let v = v.transpose(1, 2)?;
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
+            panic!("FLAG: softmax_scale: {softmax_scale}");
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?
         } else {
             let in_dtype = q.dtype();
