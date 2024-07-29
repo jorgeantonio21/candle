@@ -250,6 +250,10 @@ impl CausalSelfAttention {
             cache.kvs[block_idx] = Some((k.clone(), v.clone()))
         }
 
+        save_tensor_to_file(&q.transpose(1, 2)?, "query")?;
+        save_tensor_to_file(&k.transpose(1, 2)?, "key")?;
+        save_tensor_to_file(&v.transpose(1, 2)?, "value")?;
+
         let k = self.repeat_kv(k)?;
         let v = self.repeat_kv(v)?;
 
@@ -419,7 +423,6 @@ impl Llama {
         for (block_idx, block) in self.blocks.iter().enumerate() {
             x = block.forward(&x, index_pos, block_idx, cache)?;
         }
-        x.save_safetensors("attn_output", "./")?;
         let x = self.ln_f.forward(&x)?;
         let x = x.i((.., seq_len - 1, ..))?.contiguous()?;
         let logits = self.lm_head.forward(&x)?;
