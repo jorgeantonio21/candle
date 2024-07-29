@@ -215,6 +215,10 @@ impl CausalSelfAttention {
         let k = self.k_proj.forward(x)?;
         let v = self.v_proj.forward(x)?;
 
+        save_tensor_to_file(&q, "query")?;
+        save_tensor_to_file(&k, "key")?;
+        save_tensor_to_file(&v, "value")?;
+
         let q = q
             .reshape((b_sz, seq_len, self.num_attention_heads, self.head_dim))?
             .transpose(1, 2)?
@@ -249,10 +253,6 @@ impl CausalSelfAttention {
             }
             cache.kvs[block_idx] = Some((k.clone(), v.clone()))
         }
-
-        save_tensor_to_file(&q.transpose(1, 2)?, "query")?;
-        save_tensor_to_file(&k.transpose(1, 2)?, "key")?;
-        save_tensor_to_file(&v.transpose(1, 2)?, "value")?;
 
         let k = self.repeat_kv(k)?;
         let v = self.repeat_kv(v)?;
