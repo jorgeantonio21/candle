@@ -165,7 +165,7 @@ impl FlashAttn {
             let v_ptr = *v.device_ptr() as *const core::ffi::c_void;
             let dst_ptr = *dst.device_ptr() as *const core::ffi::c_void;
             let softmax_lse_ptr = *softmax_lse.device_ptr() as *const core::ffi::c_void;
-            panic!("q_l.stride() = {:?}, k_l.stride() = {:?}, v_l.stride() = {:?}, out_stride = {:?}", q_l.stride(), k_l.stride(), v_l.stride(), out_shape.stride());
+            panic!("q_l.stride() = {:?}, k_l.stride() = {:?}, v_l.stride() = {:?}, out_stride = {:?}", q_l.stride(), k_l.stride(), v_l.stride(), out_l.stride());
             println!("q_row_stride: {}, k_row_stride: {}, v_row_stride: {}, o_row_stride: {}", q_stride[q_rank - 3], k_stride[k_rank - 3], v_stride[v_rank - 3], o_stride[o_rank - 3]);
             println!("q_head_stride: {}, k_head_stride: {}, v_head_stride: {}, o_head_stride: {}", q_stride[q_rank - 2], k_stride[k_rank - 2], v_stride[v_rank - 2], o_stride[o_rank - 2]);
             ffi::run_mha(
