@@ -185,7 +185,7 @@ fn flash_attn(
     softmax_scale: f32,
     causal: bool,
 ) -> Result<Tensor> {
-    candle_flash_attn::flash_attn_varlen(q, k, v, &Tensor::new(&[0u32, 3], (2, ), &device).unwrap(), &Tensor::new(&[0u32, 3], (2, ), &device).unwrap(), 100, 100, softmax_scale, causal)
+    candle_flash_attn::flash_attn_varlen(q, k, v, &Tensor::new(&[0u32, 3], (2, ), &Device::new_cuda(0).unwrap()).unwrap(), &Tensor::new(&[0u32, 3], (2, ), &Device::new_cuda(0).unwrap()).unwrap(), 100, 100, softmax_scale, causal)
 }
 
 #[cfg(not(feature = "flash-attn"))]
