@@ -250,6 +250,10 @@ impl CausalSelfAttention {
             cache.kvs[block_idx] = Some((k.clone(), v.clone()))
         }
 
+
+        save_tensor_to_file(&q.transpose(1, 2)?, "query")?;
+        save_tensor_to_file(&k.transpose(1, 2)?, "key")?;
+        save_tensor_to_file(&v.transpose(1, 2)?, "value")?;
         let k = self.repeat_kv(k)?;
         let v = self.repeat_kv(v)?;
 
@@ -258,9 +262,6 @@ impl CausalSelfAttention {
             let q = q.transpose(1, 2)?;
             let k = k.transpose(1, 2)?;
             let v = v.transpose(1, 2)?;
-            save_tensor_to_file(&q, "query")?;
-            save_tensor_to_file(&k, "key")?;
-            save_tensor_to_file(&v, "value")?;
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?
         } else {
