@@ -258,6 +258,7 @@ impl CausalSelfAttention {
         let v = self.repeat_kv(v)?;
 
         let y = if self.use_flash_attn {
+            panic!("FLAG: flash-attn");
             // flash-attn expects (b_sz, seq_len, nheads, head_dim)
             let q = q.transpose(1, 2)?;
             let k = k.transpose(1, 2)?;
