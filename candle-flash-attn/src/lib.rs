@@ -176,9 +176,6 @@ impl FlashAttn {
             println!("v_ptr = {:?}, ", v_ptr);
             println!("dst_ptr = {:?}, ", dst_ptr);
             println!("softmax_lse_ptr = {:?}, ", softmax_lse_ptr);
-            println!("alibi_slopes_ptr = {:?}, ", alibi_slopes_ptr);
-            println!("cu_seqlens_q_ptr = {:?}, ", seqlens_q_ptr);
-            println!("cu_seqlens_k_ptr = {:?}, ", seqlens_k_ptr);
             println!("q_row_stride = {}, ", q_stride[q_rank - 3]);
             println!("k_row_stride = {}, ", k_stride[k_rank - 3]);
             println!("v_row_stride = {}, ", v_stride[v_rank - 3]);
