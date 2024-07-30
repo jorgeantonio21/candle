@@ -1,6 +1,7 @@
 use super::with_tracing::{linear_no_bias as linear, Linear, RmsNorm};
 use candle::{DType, Device, IndexOp, Result, Tensor, D};
 use candle_nn::{embedding, Embedding, Module, VarBuilder};
+use core::panic;
 use std::collections::HashMap;
 
 pub const MAX_SEQ_LEN: usize = 4096;
@@ -264,6 +265,7 @@ impl CausalSelfAttention {
             let v = v.transpose(1, 2)?;
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?
+            panic!("FLAG");
         } else {
             let in_dtype = q.dtype();
             let q = q.to_dtype(DType::F32)?;
