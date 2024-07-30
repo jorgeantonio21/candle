@@ -265,7 +265,6 @@ impl CausalSelfAttention {
             let v = v.transpose(1, 2)?;
             let softmax_scale = 1f32 / (self.head_dim as f32).sqrt();
             flash_attn(&q, &k, &v, softmax_scale, seq_len > 1)?.transpose(1, 2)?;
-            panic!("FLAG");
         } else {
             let in_dtype = q.dtype();
             let q = q.to_dtype(DType::F32)?;
