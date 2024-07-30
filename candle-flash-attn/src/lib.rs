@@ -165,23 +165,26 @@ impl FlashAttn {
             let v_ptr = *v.device_ptr() as *const core::ffi::c_void;
             let dst_ptr = *dst.device_ptr() as *const core::ffi::c_void;
             let softmax_lse_ptr = *softmax_lse.device_ptr() as *const core::ffi::c_void;
-            // println!("q_l.stride() = {:?}, k_l.stride() = {:?}, v_l.stride() = {:?}, out_stride = {:?}", q_l.stride(), k_l.stride(), v_l.stride(), out_l.stride());
-            // println!("q_l.shape() = {:?}", q_l.shape());
-            // println!("k_l.shape() = {:?}", k_l.shape());
-            // println!("v_l.shape() = {:?}", v_l.shape());
-            // println!("q_ptr = {:?}, ", q_ptr);
-            // println!("k_ptr = {:?}, ", k_ptr);
-            // println!("v_ptr = {:?}, ", v_ptr);
-            // println!("dst_ptr = {:?}, ", dst_ptr);
-            // println!("softmax_lse_ptr = {:?}, ", softmax_lse_ptr);
-            // println!("q_row_stride = {}, ", q_stride[q_rank - 3]);
-            // println!("k_row_stride = {}, ", k_stride[k_rank - 3]);
-            // println!("v_row_stride = {}, ", v_stride[v_rank - 3]);
-            // println!("o_row_stride = {}, ", o_stride[o_rank - 3]);
-            // println!("q_head_stride = {}, ", q_stride[q_rank - 2]);
-            // println!("k_head_stride = {}, ", k_stride[k_rank - 2]);
-            // println!("v_head_stride = {}, ", v_stride[v_rank-2]);
-            // println!("o_head_stride = {}, ", o_stride[o_rank - 2]);
+            println!("q_l.stride() = {:?}, k_l.stride() = {:?}, v_l.stride() = {:?}, out_stride = {:?}", q_l.stride(), k_l.stride(), v_l.stride(), out_l.stride());
+            println!("q_l.shape() = {:?}", q_l.shape());
+            println!("k_l.shape() = {:?}", k_l.shape());
+            println!("v_l.shape() = {:?}", v_l.shape());
+            println!("q_ptr = {:?}, ", q_ptr);
+            println!("k_ptr = {:?}, ", k_ptr);
+            println!("v_ptr = {:?}, ", v_ptr);
+            println!("dst_ptr = {:?}, ", dst_ptr);
+            println!("softmax_lse_ptr = {:?}, ", softmax_lse_ptr);
+            println!("q_row_stride = {}, ", q_stride[q_rank - 3]);
+            println!("k_row_stride = {}, ", k_stride[k_rank - 3]);
+            println!("v_row_stride = {}, ", v_stride[v_rank - 3]);
+            println!("o_row_stride = {}, ", o_stride[o_rank - 3]);
+            println!("q_head_stride = {}, ", q_stride[q_rank - 2]);
+            println!("k_head_stride = {}, ", k_stride[k_rank - 2]);
+            println!("v_head_stride = {}, ", v_stride[v_rank-2]);
+            println!("o_head_stride = {}, ", o_stride[o_rank - 2]);
+            println!("is_causal = {}", is_causal);
+            println!("window_size_left = {}", window_size_left);
+            println!("window_size_right = {}", window_size_right);
             ffi::run_mha(
                 q_ptr,
                 k_ptr,
