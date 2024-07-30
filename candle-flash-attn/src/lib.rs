@@ -166,8 +166,6 @@ impl FlashAttn {
             let dst_ptr = *dst.device_ptr() as *const core::ffi::c_void;
             let softmax_lse_ptr = *softmax_lse.device_ptr() as *const core::ffi::c_void;
             println!("q_l.stride() = {:?}, k_l.stride() = {:?}, v_l.stride() = {:?}, out_stride = {:?}", q_l.stride(), k_l.stride(), v_l.stride(), out_l.stride());
-            println!("seqlens_q_l.shape() = {:?}", seqlens_q_layout.shape());
-            println!("seqlens_k_l.shape() = {:?}", seqlens_k_layout.shape());
             println!("q_l.shape() = {:?}", q_l.shape());
             println!("k_l.shape() = {:?}", k_l.shape());
             println!("v_l.shape() = {:?}", v_l.shape());
